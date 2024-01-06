@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
 import ApplyLeaveForm from "./components/ApplyLeaveForm";
+import LeaveStatus from "./components/LeaveStatusPage";
 import { UserProvider } from "./context/UserContext";
 import { Provider as PaperProvider } from "react-native-paper";
 const Stack = createStackNavigator();
@@ -15,10 +16,11 @@ export default function App() {
     <UserProvider>
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="LeaveForm">
+          <Stack.Navigator initialRouteName="Home">
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
             <Stack.Screen name="LeaveForm" component={ApplyLeaveForm} />
+            <Stack.Screen name="LeaveStatus" component={LeaveStatus} />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>

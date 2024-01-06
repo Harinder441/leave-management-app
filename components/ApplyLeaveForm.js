@@ -11,52 +11,62 @@ import CustomTextInput from "./Form/CustomTextComponent";
 import { objectToArray, addDaysToDate } from "./Form/utils";
 import { useUser } from "../context/UserContext";
 import CircularProgress from "./Form/CircularProgress";
+import apiClient from "../apiClient";
+
 const ApplyLeaveForm = ({ navigation }) => {
   const { user } = useUser();
   const defaultFormData = {
-    startDate: "",
-    numberOfLeaves: "",
-    endDate: "",
-    address: "",
-    mobile: "",
-    leaveReason: "",
-    leaveType: "",
-    leaveSubType: "",
+    school_id:"",
+    emp_id:"",
+    start_date: "",
+    no_of_leaves: "",
+    end_date: "",
+    address_on_leave: "",
+    mobile_on_leave: "",
+    sunday_fix: 0,
+    reason: "",
+    leave_type: "",
+    leave_sub_type: "",
+    designation_category: "",
     attachment: null
-  }
+  };
   const [formData, setFormData] = useState(defaultFormData);
   const [displayData, setDisplayData] = useState({});
-
-  useEffect(() => {
-    
-    fetchDisplayData();
-  }, []);
+  const [loading,setLoading] = useState(false);
   useEffect(() => {
     if (user) {
       setFormData((prev) => ({
         ...prev,
-        address: user.address || "",
-        mobile: String(user.mobile)
+        address_on_leave: user.address || "",
+        mobile_on_leave: String(user.mobile),
+        school_id:user.school_id,
+        emp_id:user.emp_id
       }));
+      fetchDisplayData();
     }
   }, [user]);
   useEffect(() => {
     autoFillEndDate();
-  }, [formData.startDate, formData.numberOfLeaves]);
+  }, [formData.start_date, formData.no_of_leaves]);
   const fetchDisplayData = async () => {
     try {
-      const result = await getLeaveFormData();
-      setDisplayData(result);
+      const res = await apiClient.get(`/getLeaveFormData/${user.emp_id}`);
+      const data = res.data;
+      setDisplayData(data);
+      setFormData((prev) => ({
+        ...prev,
+        designation_category: data?.designation_category ?? ""
+      }));
     } catch (error) {
-      console.error("Error fetching display data:", error);
+      console.error('Error during API request:', error.response.data.message || error.message);
     }
   };
 
   const autoFillEndDate = () => {
-    if (formData.numberOfLeaves && formData.startDate) {
-      let date = addDaysToDate(formData.startDate, parseInt(formData.numberOfLeaves) - 1);
+    if (formData.no_of_leaves && formData.start_date) {
+      let date = addDaysToDate(formData.start_date, parseInt(formData.no_of_leaves) - 1);
 
-      setFormData((prev) => ({ ...prev, endDate: date }));
+      setFormData((prev) => ({ ...prev, end_date: date }));
     }
   };
   const handleInputChange = (name, value) => {
@@ -67,57 +77,56 @@ const ApplyLeaveForm = ({ navigation }) => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
-    
-      console.log("Leave application submitted successfully!",formData);
+      const res = await apiClient.post(`createLeaveRequest`,formData);
+      console.log(res.data.message);
       setFormData(defaultFormData);
-      navigation.navigate('Dashboard');
+      navigation.navigate("Dashboard");
     } catch (error) {
-      console.error("Error submitting leave application:", error);
+      console.error('Error during API request:', error.response.data.message || error.message);
+    }finally{
+      setLoading(false)
     }
   };
-  const selectItems = [
-    { label: "Option 1", value: "option1" },
-    { label: "Option 2", value: "option2" },
-    { label: "Option 3", value: "option3" }
-  ];
 
   const viewItems = [
-    { label: "Leave Balance", value: displayData.leaveBalance || 0 },
-    { label: "Leave Availed in Current Month", value: displayData.leaveAvailedInCurrMonth || 0 },
-    { label: "Leave Availed in Current Session", value: displayData.leaveAvailedInCurrSession || 0 }
-    // { label: "ETT Admission Number", value: displayData.ETTAdmNo || 0 },
-    // { label: "Joining Date", value: displayData.joiningDate || null },
-    // { label: "Organization Joining Date", value: displayData.orgJoiningDate || null },
-    // { label: "Father's Name", value: displayData.fatherName || '' },
+    { label: "Leave Balance", value: displayData.leave_balance || 0 },
+    { label: "Leave Availed in Current Month", value: displayData.month_availed_leave || 0 },
+    { label: "Leave Availed in Current Session", value: displayData.year_availed_leave || 0 },
+    // { label: "ETT Admission Number", value: displayData.ett_adm_no || 0 },
+    // { label: "Joining Date", value: displayData.joining_date || null },
+    // { label: "Organization Joining Date", value: displayData.org_joining_date || null },
+    { label: "Father's Name", value: displayData.father_name || '' },
     // { label: "Designation", value: displayData.designation || '' },
   ];
+
   return (
     <>
       {displayData ? (
         <ScrollView>
           <View style={styles.container}>
             <FormView formData={viewItems} />
-            <CustomDatePicker label="Start Date" defaultValue={formData.startDate} onValueChange={(date) => handleInputChange("startDate", date)} />
-            <CustomTextInput label="Number of Leaves" keyboardType="numeric" defaultValue={formData.numberOfLeaves} onValueChange={(text) => handleInputChange("numberOfLeaves", text)} />
-            <CustomDatePicker label="End Date" defaultValue={formData.endDate} disabled />
-            <CustomSelectField label="Leave Type" items={objectToArray(displayData.leaveTypes)} defaultValue={formData.leaveType} onValueChange={(value) => handleInputChange("leaveType", value)} />
+            <CustomDatePicker label="Start Date" defaultValue={formData.start_date} onValueChange={(date) => handleInputChange("start_date", date)} />
+            <CustomTextInput label="Number of Leaves" keyboardType="numeric" defaultValue={formData.no_of_leaves} onValueChange={(text) => handleInputChange("no_of_leaves", text)} />
+            <CustomDatePicker label="End Date" defaultValue={formData.end_date} disabled />
+            <CustomSelectField label="Leave Type" items={objectToArray(displayData.leaveTypes)} defaultValue={formData.leave_type} onValueChange={(value) => handleInputChange("leave_type", value)} />
 
-            {displayData.needLeaveSubType && formData.leaveType === "leave" && (
+            {displayData.needLeaveSubType && formData.leave_type === "Leave" && (
               <CustomSelectField
                 label="Leave Sub Type"
                 items={objectToArray(displayData.leaveSubTypes)}
-                defaultValue={formData.leaveSubType}
-                onValueChange={(value) => handleInputChange("leaveSubType", value)}
+                defaultValue={formData.leave_sub_type}
+                onValueChange={(value) => handleInputChange("leave_sub_type", value)}
               />
             )}
-            <CustomTextInput label="Leave Reason" defaultValue={formData.leaveReason} onValueChange={(text) => handleInputChange("leaveReason", text)} />
-            <CustomTextInput label="Address" defaultValue={formData.address} onValueChange={(text) => handleInputChange("address", text)} />
-            <CustomTextInput label="Mobile" keyboardType="numeric" defaultValue={formData.mobile} onValueChange={(text) => handleInputChange("mobile", text)} />
+            <CustomTextInput label="Leave Reason" defaultValue={formData.reason} onValueChange={(text) => handleInputChange("reason", text)} />
+            <CustomTextInput label="Address" defaultValue={formData.address_on_leave} onValueChange={(text) => handleInputChange("address_on_leave", text)} />
+            <CustomTextInput label="Mobile" keyboardType="numeric" defaultValue={formData.mobile_on_leave} onValueChange={(text) => handleInputChange("mobile_on_leave", text)} />
             {/* <CustomFilePicker label="Attachment" onValueChange={(value) => handleFileInputChange("attachment",value)}/> */}
 
-            <Button onPress={handleSubmit} mode="contained" style={styles.submitButton}>
-              Submit
+            <Button onPress={handleSubmit} mode="contained" style={styles.submitButton} disabled={loading}>
+             {loading?"Submitting...":"Submit"}
             </Button>
           </View>
         </ScrollView>

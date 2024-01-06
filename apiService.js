@@ -26,16 +26,16 @@ const getLeaveFormData = async () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       const result = {
-        leaveBalance: 20,
-        leaveAvailedInCurrMonth: 2,
-        leaveAvailedInCurrSession: 5,
-        ETTAdmNo: 123,
+        leave_balance: 20,
+        month_availed_leave: 2,
+        year_availed_leave: 5,
+        ett_adm_no: 123,
         needLeaveSubType: true,
         leaveTypes: { "leave": 'Leave', "out_duty": 'Out Duty' },
         leaveSubTypes: { 1: 'Casual Leave', 2: 'Leave Without Pay',3:"Academic Leave" },
-        joiningDate: '2022-01-01',
-        orgJoiningDate: '2022-01-01',
-        fatherName: 'John Doe',
+        joining_date: '2022-01-01',
+        org_joining_date: '2022-01-01',
+        father_name: 'John Doe',
         designation: 'Software Engineer',
       };
       resolve(result);

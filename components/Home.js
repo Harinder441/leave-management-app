@@ -2,7 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { View, Text,TextInput, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { getUserDataByMobile } from '../apiService';
 import { useUser } from '../context/UserContext';
-
+import apiClient from '../apiClient';
 const Home = ({ navigation }) => {
   const { user,storeUserData,getLastLoginMobile } = useUser();
   // const defaultMobile = await getLastLoginMobile();
@@ -28,12 +28,12 @@ const Home = ({ navigation }) => {
     }
     try {
 
-      const result = await getUserDataByMobile(selectedMobileNumber);
-      storeUserData(result);
-      navigation.navigate('Dashboard', { userDetails: result});
+      const res = await apiClient.post("/validateEmpByMobile",{mobile:selectedMobileNumber});
+      storeUserData(res.data);
+      navigation.navigate('Dashboard');
 
     } catch (error) {
-      console.error('Error during API request:', error);
+      console.error('Error during API request:', error.response.data.message || error.message);
       setError('An error occurred. Please try again.');
     }
   };

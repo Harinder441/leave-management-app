@@ -13,9 +13,14 @@ const Dashboard = ({ navigation, route }) => {
         <View style={styles.container}>
           {/* Navbar with user details */}
           <View style={styles.navbar}>
+          <View style={styles.navbarData}>
             <Text style={styles.username}>
               {userDetails.first_name} {userDetails.last_name}
             </Text>
+            <Text style={styles.school}>
+              {userDetails.school_name} 
+            </Text>
+            </View>
             <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
               <Text style={styles.buttonText}>Logout</Text>
             </TouchableOpacity>
@@ -60,12 +65,23 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop:30,
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
+    flexDirection:'row'
+  },
+  navbarData: {
+    alignItems: "center",
+    gap:10,
+    flexDirection:'row'
   },
   username: {
     color: "white",
     fontSize: 18,
     fontWeight: "bold"
+  }, 
+  school: {
+    color: "white",
+    fontSize: 16,
+    
   },
   content: {
     flex: 1,
