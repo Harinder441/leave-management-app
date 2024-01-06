@@ -3,12 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useUser } from "../context/UserContext";
 const Dashboard = ({ navigation, route }) => {
   const { user: userDetails,clearUserData } = useUser();
-  // const { userDetails } = route.params;
-  // const userDetails = {
-  //   id: 1,
-  //   first_name: "John",
-  //   last_name: "Doe"
-  // };
   const handleLogout = () => {
     clearUserData();
     navigation.navigate('Home');
@@ -31,7 +25,7 @@ const Dashboard = ({ navigation, route }) => {
           {/* Main content */}
           <View style={styles.content}>
             {/* Three big buttons */}
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ApplyLeave")}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("LeaveForm")}>
               <Text style={styles.buttonText}>Apply Leave</Text>
             </TouchableOpacity>
 
