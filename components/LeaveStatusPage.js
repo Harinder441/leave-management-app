@@ -4,8 +4,10 @@ import { Chip, Title } from "react-native-paper";
 import apiClient from "../apiClient";
 import CircularProgress from "./Form/CircularProgress";
 import { useUser } from "../context/UserContext";
-
+import { useSnackbar } from '../context/SnackbarContext';
+import { getLocalDateString } from "./Form/utils";
 const LeaveStatus = () => {
+  const {showSnackbar} = useSnackbar(); 
   const [leaveStatusData, setLeaveStatusData] = useState(null);
   const { user } = useUser();
   useEffect(() => {
@@ -19,16 +21,18 @@ const LeaveStatus = () => {
       const res = await apiClient.get(`/getLeaveStatusData/${user.emp_id}`);
       setLeaveStatusData(res.data);
     } catch (error) {
-      console.error("Error fetching leave status data:", error);
+      console.log("Error fetching leave status data:", error);
+      showSnackbar('Error during API request:'+(error.response.data.message || error.message),'error');
     }
   };
 
   const renderLeaveItem = ({ item }) => (
-    <View style={styles.leaveItem}>
-      <View>
-        <Title>{`Start Date: ${item.start_date}`}</Title>
-        <Text>{`Type: ${item.leave_sub_type || item.leave_type}`}</Text>
-        <Text>{`For: ${item.no_of_leaves} days`}</Text>
+    <View style={styles.leaveItemContainer}>
+      <View style={styles.leaveItemDetails}>
+        <Title>{`Applied On: ${getLocalDateString(item.created_date)}`}</Title>
+        <Text>{`${item.leave_sub_type || item.leave_type} for ${item.no_of_leaves} days`}</Text>
+        <Text>{`From ${getLocalDateString(item.start_date)} to ${getLocalDateString(item.end_date)}`}</Text>
+        <Text>{`Reason: ${item.reason} days`}</Text>
       </View>
       <Chip mode="outlined" style={[styles.statusChip, { backgroundColor: getStatusColor(item.final_status) }]}>
         {getStatusText(item.final_status)}
@@ -80,11 +84,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20
   },
-  leaveItem: {
+  leaveItemContainer: {
     marginBottom: 20,
     flexDirection:'row',
     justifyContent:"space-between",
-    alignItems:"center"
+    alignItems:"center",
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  leaveItemDetails: {
+   
   },
   statusChip: {
     // marginTop: 5,

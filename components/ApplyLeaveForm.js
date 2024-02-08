@@ -12,8 +12,10 @@ import { objectToArray, addDaysToDate } from "./Form/utils";
 import { useUser } from "../context/UserContext";
 import CircularProgress from "./Form/CircularProgress";
 import apiClient from "../apiClient";
+import { useSnackbar } from '../context/SnackbarContext';
 
 const ApplyLeaveForm = ({ navigation }) => {
+  const {showSnackbar} = useSnackbar(); 
   const { user } = useUser();
   const defaultFormData = {
     school_id:"",
@@ -31,7 +33,7 @@ const ApplyLeaveForm = ({ navigation }) => {
     attachment: null
   };
   const [formData, setFormData] = useState(defaultFormData);
-  const [displayData, setDisplayData] = useState({});
+  const [displayData, setDisplayData] = useState(null);
   const [loading,setLoading] = useState(false);
   useEffect(() => {
     if (user) {
@@ -58,7 +60,9 @@ const ApplyLeaveForm = ({ navigation }) => {
         designation_category: data?.designation_category ?? ""
       }));
     } catch (error) {
-      console.error('Error during API request:', error.response.data.message || error.message);
+      console.log('Error during API request:', error.response.data.message || error.message);
+      showSnackbar('Error during API request:'+(error.response.data.message || error.message),'error');
+
     }
   };
 
@@ -80,25 +84,29 @@ const ApplyLeaveForm = ({ navigation }) => {
     setLoading(true);
     try {
       const res = await apiClient.post(`createLeaveRequest`,formData);
-      console.log(res.data.message);
+      showSnackbar(res.data.message,'success');
       setFormData(defaultFormData);
       navigation.navigate("Dashboard");
     } catch (error) {
       console.error('Error during API request:', error.response.data.message || error.message);
+      showSnackbar('Error during API request:'+(error.response.data.message || error.message),'error');
+
     }finally{
       setLoading(false)
     }
   };
 
   const viewItems = [
-    { label: "Leave Balance", value: displayData.leave_balance || 0 },
-    { label: "Leave Availed in Current Month", value: displayData.month_availed_leave || 0 },
-    { label: "Leave Availed in Current Session", value: displayData.year_availed_leave || 0 },
-    // { label: "ETT Admission Number", value: displayData.ett_adm_no || 0 },
-    // { label: "Joining Date", value: displayData.joining_date || null },
-    // { label: "Organization Joining Date", value: displayData.org_joining_date || null },
-    { label: "Father's Name", value: displayData.father_name || '' },
-    // { label: "Designation", value: displayData.designation || '' },
+    { label: "Leave Balance", value: displayData?.leave_balance || 0 },
+    // { label: "LA in Curr Month / Current Session", value: `${displayData?.month_availed_leave || 0} / ${displayData?.year_availed_leave || 0}` },
+    { label: "LA in Curr Month", value: displayData?.month_availed_leave || 0 },
+    { label: "LA in Curr Session", value: displayData?.year_availed_leave || 0 },
+    { label: "ETT Adm No.", value: displayData?.ett_adm_no || 0 },
+    // { label: "Joining Date / Org Joining Date ", value:  `${displayData?.joining_date || "N/A"} / ${displayData?.org_joining_date || "N/A"}` },
+    { label: "Joining Date", value: displayData?.joining_date || null },
+    { label: "Org Joining Date", value: displayData?.org_joining_date || null },
+    { label: "Father's Name", value: displayData?.father_name || '' },
+    { label: "Designation", value: displayData?.designation || '' },
   ];
 
   return (

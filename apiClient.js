@@ -7,14 +7,14 @@ const apiClient = axios.create({
     Accept: 'application/json',
   },
 });
-apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    console.error('Error during API request:', error.response?.data?.message || error.message);
-    return Promise.reject(error);
-  }
-);
+// apiClient.interceptors.response.use(
+//   (response) => {
+//     return response;
+//   },
+//   (error) => {
+//     console.error('Error during API request:', error.response?.data?.message || error.message);
+//     return Promise.reject(error);
+//   }
+// );
 
 export default apiClient;

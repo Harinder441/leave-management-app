@@ -3,7 +3,9 @@ import { View, Text,TextInput, Image, TouchableOpacity, StyleSheet } from 'react
 import { getUserDataByMobile } from '../apiService';
 import { useUser } from '../context/UserContext';
 import apiClient from '../apiClient';
+import { useSnackbar } from '../context/SnackbarContext';
 const Home = ({ navigation }) => {
+  const {showSnackbar} = useSnackbar(); 
   const { user,storeUserData,getLastLoginMobile } = useUser();
   // const defaultMobile = await getLastLoginMobile();
   useEffect(() => {
@@ -23,7 +25,7 @@ const Home = ({ navigation }) => {
   const [error, setError] = useState(null);
   const handleContinue = async () => {
     if(!isValidPhoneNumber(selectedMobileNumber)){
-      setError("Please Enter a Valid Number")
+      showSnackbar("Please Enter a Valid Number",'error')
       return;
     }
     try {
@@ -33,8 +35,8 @@ const Home = ({ navigation }) => {
       navigation.navigate('Dashboard');
 
     } catch (error) {
-      console.error('Error during API request:', error.response.data.message || error.message);
-      setError('An error occurred. Please try again.');
+      console.log('Error during API request:', error.response.data.message || error.message);
+      showSnackbar('Error during API request:'+(error.response.data.message || error.message),'error');
     }
   };
  

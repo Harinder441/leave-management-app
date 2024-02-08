@@ -12,3 +12,10 @@ export function addDaysToDate(originalDate, daysToAdd) {
   newDate.setDate(newDate.getDate() +daysToAdd);
   return newDate;
 }
+
+export function getLocalDateString(date) {
+  if(date){
+    return new Date(date).toLocaleDateString();
+  }
+  return "";
+}
