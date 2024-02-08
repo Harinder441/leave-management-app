@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
 import ApplyLeaveForm from "./components/ApplyLeaveForm";
 import LeaveStatus from "./components/LeaveStatusPage";
+import AttendancePage from "./components/AttendancePage";
 import { UserProvider } from "./context/UserContext";
 import { Provider as PaperProvider } from "react-native-paper";
 import { SnackbarProvider } from "./context/SnackbarContext";
@@ -23,6 +24,7 @@ export default function App() {
               <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
               <Stack.Screen name="LeaveForm" component={ApplyLeaveForm} />
               <Stack.Screen name="LeaveStatus" component={LeaveStatus} />
+              <Stack.Screen name="AttendancePage" component={AttendancePage} />
             </Stack.Navigator>
           </NavigationContainer>
         </SnackbarProvider>

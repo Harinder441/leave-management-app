@@ -38,7 +38,7 @@ const Dashboard = ({ navigation, route }) => {
               <Text style={styles.buttonText}>Leave Status</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AttendanceRegister")}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AttendancePage")}>
               <Text style={styles.buttonText}>Show Attendance Register</Text>
             </TouchableOpacity>
           </View>
